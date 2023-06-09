@@ -12,8 +12,29 @@ CATEGORIES = {'archives': ('zip', 'gz', 'tar', '7z'),
             'video': ('avi', 'mp4', 'mov', 'mkv')
             }
 
+TRANSLITERATION = {'ї': 'yi', 'ё': 'yo', 'є': 'ye', 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ж': 'zh',
+                'з': 'z', 'и': 'y', 'і': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 
+                'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 
+                'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', 'Ё': 'Yo','Є': 'Ye', 'Ї': 'Yi', 'А': 'A', 'Б': 'B', 
+                'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'І': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 
+                'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 
+                'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Shch', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
+                }  
+
 
 def create_categories():
+    """
+    Create category folders if they don't exist.
+
+    This function iterates over the defined categories and checks if each category folder
+    exists in the BASE_FOLDER. If a category folder doesn't exist, it creates the folder.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
 
     for folder_name in CATEGORIES:
         if folder_name in os.listdir(BASE_FOLDER):
@@ -23,16 +44,20 @@ def create_categories():
         os.makedirs(folder_path)
         
 
-def normalize(file_name):
+def normalize(file_name: str) -> str:
+    """
+    Normalize the file name by removing illegal characters and applying transliteration.
 
-    TRANSLITERATION = {'ї': 'yi', 'ё': 'yo', 'є': 'ye', 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ж': 'zh',
-                    'з': 'z', 'и': 'y', 'і': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 
-                    'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 
-                    'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya', 'Ё': 'Yo','Є': 'Ye', 'Ї': 'Yi', 'А': 'A', 'Б': 'B', 
-                    'В': 'V', 'Г': 'G', 'Д': 'D', 'Е': 'E', 'Ж': 'Zh', 'З': 'Z', 'И': 'I', 'І': 'I', 'Й': 'Y', 'К': 'K', 'Л': 'L', 
-                    'М': 'M', 'Н': 'N', 'О': 'O', 'П': 'P', 'Р': 'R', 'С': 'S', 'Т': 'T', 'У': 'U', 'Ф': 'F', 'Х': 'H', 
-                    'Ц': 'Ts', 'Ч': 'Ch', 'Ш': 'Sh', 'Щ': 'Shch', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya'
-                    }  
+    This function takes a file name as input and normalizes it by  replacing characters
+    that are not in the set of allowed characters (ascii letters, digits, and underscore). 
+    It also applies transliteration to replace any non-ASCII characters with their 
+    corresponding ASCII equivalents.
+
+    Args:
+        file_name (str): The file name to normalize.
+
+    Returns:
+        str: The normalized file name."""
 
     correct_characters = ascii_letters + digits + '_'       
     file_name, extension = os.path.splitext(file_name)
@@ -43,8 +68,21 @@ def normalize(file_name):
     return file_name + extension
 
 
-def check_name_conflict(folder_path, name):   
-    
+def check_name_conflict(folder_path: str, name: str) -> str:   
+    """
+    Check if a file name conflicts with existing files in a folder and resolves the conflict.
+
+    This function checks if the given name conflicts with any existing files in the specified
+    folder. If there is a conflict, it appends a counter to the name to make it unique.
+
+    Args:
+        folder_path (str): The path to the folder.
+        name (str): The file name to check for conflicts.
+
+    Returns:
+        str: The resolved file name without conflicts.
+    """
+
     files = os.listdir(folder_path)
     
     if name not in files:
@@ -61,7 +99,21 @@ def check_name_conflict(folder_path, name):
     return new_filename
     
 
-def rename_file(destination_folder, full_file_path): 
+def rename_file(destination_folder: str, full_file_path: str) -> str: 
+    """
+    Rename a file and resolve naming conflicts.
+
+    This function renames the file at the given full file path by normalizing the file name.
+    If the new file name conflicts with existing files in either the source folder or the
+    destination folder, it resolves the conflicts.
+
+    Args:
+        destination_folder (str): The path to the destination folder.
+        full_file_path (str): The full path to the file.
+
+    Returns:
+        str: The new full file path of the renamed file.
+    """
 
     file_name = os.path.basename(full_file_path)
     file_path = os.path.dirname(full_file_path) 
@@ -78,12 +130,42 @@ def rename_file(destination_folder, full_file_path):
     return new_full_file_path
 
 
-def move_file(file_path, destination_folder):
+def move_file(file_path: str, destination_folder: str):
+    """
+    Move a file to the specified destination folder.
+
+    This function moves the file at the given file path to the specified destination folder.
+    It calls the `rename_file` function to ensure the file is renamed and conflicts are resolved
+    before moving it.
+
+    Args:
+        file_path (str): The path to the file to be moved.
+        destination_folder (str): The path to the destination folder.
+
+    Returns:
+        None
+    """
+
     new_full_file_path = rename_file(destination_folder, file_path)
     shutil.move(new_full_file_path, destination_folder)
 
 
-def get_category_path(file_name):
+def get_category_path(file_name: str) -> str or None:
+    """
+    Get the category path for a file based on its extension.
+
+    This function determines the category path for a file based on its extension. It compares
+    the extension with the extensions defined in the CATEGORIES dictionary. If a match is found,
+    it returns the corresponding category path.
+
+    Args:
+        file_name (str): The name of the file.
+
+    Returns:
+        str: The path to the category folder if the file belongs to a category, None otherwise.
+
+    """
+
     extension = os.path.splitext(file_name)[1].lower()[1:]
     if extension:
     
@@ -97,6 +179,21 @@ def get_category_path(file_name):
 
 
 def move_files():
+    """
+    Move files to their respective category folders.
+
+    This function traverses the files and folders within the BASE_FOLDER.
+    Files that match the extensions specified in the CATEGORIES dictionary are moved to their
+    corresponding category folders using the move_file function.
+    Files with unknown extensions are renamed using the rename_file function.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """ 
+    
     for root, dirs, files in os.walk(BASE_FOLDER):
         if os.path.basename(root) in CATEGORIES:
             continue
@@ -109,6 +206,19 @@ def move_files():
             
 
 def unpack_archives():
+    """
+    Unpack archive files within the 'archives' folder.
+
+    This function extracts files from archive files located within the 'archives' folder
+    of the BASE_FOLDER. It supports multiple archive formats such as zip, gz, tar, and 7z.
+    Extracted files are placed in the 'archives' folder and the original archive files are deleted.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """ 
     
     folder_path = os.path.join(BASE_FOLDER, 'archives')
     files = os.listdir(folder_path)
@@ -128,6 +238,18 @@ def unpack_archives():
 
 
 def delete_empty_folders():
+    """    
+    Delete empty folders within the BASE_FOLDER.
+
+    This function traverses the files and folders within the BASE_FOLDER in reverse order.
+    Empty folders (excluding category folders) are deleted recursively.
+
+    Args:
+        None
+
+    Returns:
+        None    
+    """
 
     for root, dirs, files in os.walk(BASE_FOLDER, topdown=False):        
 
@@ -142,6 +264,18 @@ def delete_empty_folders():
 
 
 def rename_all_folders():
+    """Rename all non-category folders.
+
+    This function renames all non-category folders within the base folder by normalizing
+    their names and resolving any conflicts with existing folders.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """ 
+
     for root, dirs, files in os.walk(BASE_FOLDER):
         for directory in dirs:
 
@@ -159,7 +293,19 @@ def rename_all_folders():
 
 
 def disassemble_junk():
+    """
+    Perform the disassembly process.
 
+    This function is the main entry point for the disassembly process.
+    It calls various functions to create categories, move files, unpack archives,
+    delete empty folders, and rename non-category folders.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
     
     create_categories()
     move_files()
@@ -177,4 +323,4 @@ if __name__ == '__main__':
     
     disassemble_junk()    
 
-    print("Сортування папки", BASE_FOLDER, "завершено.")
+    print("Sorting folder", BASE_FOLDER, "completed.")
